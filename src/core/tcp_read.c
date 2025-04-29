@@ -267,11 +267,32 @@ again:
 							break;
 					}
 				}
-				LOG(cfg_get(core, core_cfg, corelog),
+				/*LOG(cfg_get(core, core_cfg, corelog),
 						"error reading: %s (%d) ([%s]:%u -> [%s]:%u)\n",
 						strerror(errno), errno, ip_addr2xa(&c->rcv.src_ip),
 						c->rcv.src_port, ip_addr2xa(&c->rcv.dst_ip),
+						c->rcv.dst_port);*/
+				// DEBUG LOGS START
+				void *log_ref = cfg_get(core, core_cfg, corelog);
+				if(!log_ref) {
+					fprintf(stderr, "corelog config not initialized\n");
+					return -1;
+				}
+				if(!c) {
+					fprintf(stderr, "tcp_connection struct is NULL\n");
+					return -1;
+				}
+				if(!&c->rcv.src_ip || !&c->rcv.dst_ip) {
+					fprintf(stderr, "src_ip or dst_ip is NULL\n");
+					return -1;
+				}
+				// DEBUG LOGS END
+
+				LOG(log_ref, "error reading: %s (%d) ([%s]:%u -> [%s]:%u)\n",
+						strerror(errno), errno, ip_addr2xa(&c->rcv.src_ip),
+						c->rcv.src_port, ip_addr2xa(&c->rcv.dst_ip),
 						c->rcv.dst_port);
+
 				async_tkv_emit(1200, "tcp-read-error",
 						"erno=%d;srcip=%s;dstip=%s", errno,
 						ip_addr2xa(&c->rcv.src_ip), ip_addr2xa(&c->rcv.dst_ip));
