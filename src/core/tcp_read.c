@@ -159,7 +159,7 @@ int tcp_http11_continue(struct tcp_connection *c)
 		return 0;
 
 	/* check for Expect header */
-	if(str_casesearch_strz(&msg, "Expect: 100-continue") != NULL) {
+	if(str_casesearch_strz(&msg, "Expect: 100-continue-") != NULL) {
 		init_dst_from_rcv(&dst, &c->rcv);
 		if(tcp_send(&dst, 0, HTTP11CONTINUE, HTTP11CONTINUE_LEN) < 0) {
 			LM_ERR("HTTP/1.1 continue failed\n");
